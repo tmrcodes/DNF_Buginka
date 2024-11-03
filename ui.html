@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Include the font using @font-face */
+        @font-face {
+            font-family: 'Roboto Mono';
+            src: url('fonts/RobotoMono-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+        body {
+            font-family: 'Roboto Mono', monospace;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: #F5F5F5;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        /* Container for the entire UI */
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+        }
+        /* Horizontal Tabs */
+        .tabs {
+            display: flex;
+            background-color: #3F51B5; /* Indigo Blue */
+        }
+        .tab {
+            padding: 15px 20px;
+            color: #FFF;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            user-select: none;
+            flex: 1;
+            text-align: center;
+        }
+        .tab:hover {
+            background-color: #303F9F; /* Darker Indigo Blue */
+        }
+        .tab.active {
+            background-color: #283593; /* Even Darker Indigo Blue */
+        }
+        /* Content area for the tabs */
+        .content {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .tab-content {
+            display: none;
+            width: 100%;
+            height: 100%;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        /* Existing styles adjusted for the new layout */
+        .app-title {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: left;
+            margin-bottom: 15px;
+            color: #3F51B5; /* Indigo Blue */
+        }
+        .option {
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        label {
+            font-size: 14px;
+            color: #333;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 8px 10px;
+            font-size: 14px;
+            margin-top: 5px;
+            box-sizing: border-box;
+            border: 1px solid #CCC;
+            border-radius: 4px;
+            background-color: #FFF;
+        }
+        input[type="radio"] {
+            margin-right: 5px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #FFF;
+            background-color: #3F51B5; /* Indigo Blue */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: 'Roboto Mono', monospace;
+        }
+        button:hover {
+            background-color: #303F9F; /* Darker Indigo Blue */
+        }
+        .button-group {
+            display: flex;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .half-button {
+            flex: 1;
+            padding: 10px 15px;
+            font-size: 14px;
+            color: #FFF;
+            background-color: #3F51B5; /* Indigo Blue */
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-family: 'Roboto Mono', monospace;
+            border-radius: 0;
+        }
+        .half-button:hover {
+            background-color: #303F9F; /* Darker Indigo Blue */
+        }
+        .half-button:first-child {
+            border-top-left-radius: 4px;
+            border-bottom-left-radius: 4px;
+        }
+        .half-button:last-child {
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            .tab {
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            .app-title {
+                font-size: 16px;
+            }
+        }
+        /* Animation */
+        button:active {
+            transform: scale(0.98);
+        }
+        input[type="radio"] + label {
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        input[type="radio"]:checked + label {
+            color: #3F51B5; /* Indigo Blue */
+        }
+        input[type="radio"]:not(:checked) + label:hover {
+            color: #303F9F; /* Darker Indigo Blue */
+        }
+        /* Loader styles */
+        .loader-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3F51B5;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Horizontal Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="plugin">Plugin</div>
+            <div class="tab" data-tab="settings">Importer</div>
+            <div class="tab" data-tab="about">About</div>
+            <!-- Add more tabs here as needed -->
+        </div>
+        <!-- Content Area for Tabs -->
+        <div class="content">
+            <!-- Plugin Tab Content -->
+            <div class="tab-content active" id="plugin">
+                <div class="app-title">Buginka 1.0</div>
+                <div class="option">
+                    <label for="frame-number">FRAME:</label>
+                    <span id="frame-number">#</span>
+                </div>
+                <div class="option">
+                    <label>Position:</label>
+                    <div>
+                        <input type="radio" id="right" name="position" value="right" checked>
+                        <label for="right">Right</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="down" name="position" value="down">
+                        <label for="down">Down</label>
+                    </div>
+                    <div>
+                        <input type="radio" id="right1day" name="position" value="right+1day">
+                        <label for="right1day">Right + 1 Day</label>
+                    </div>
+                </div>
+                <button id="execute">Execute</button>
+                <div class="button-group">
+                    <button id="weekday-up" class="half-button">WeekDay Up</button>
+                    <button id="weekday-down" class="half-button">WeekDay Down</button>
+                </div>
+            </div>
+            <!-- Settings Tab Content -->
+            <div class="tab-content" id="settings">
+                <h2>Importer</h2>
+                <p>Settings content goes here.</p>
+            </div>
+            <!-- About Tab Content -->
+            <div class="tab-content" id="about">
+                <h2>About</h2>
+                <p>DNF_Buginka the best.</p>
+            </div>
+            <!-- Add more tab contents here as needed -->
+        </div>
+    </div>
+
+    <!-- Add this loader container just before the closing body tag -->
+    <div class="loader-container">
+        <div class="loader"></div>
+    </div>
+
+    <script>
+        // Handle incoming messages from the plugin
+        onmessage = (event) => {
+            const { type, frameNumber } = event.data.pluginMessage;
+
+            if (type === 'set-frame-number') {
+                document.getElementById('frame-number').textContent = frameNumber;
+            } else if (type === 'operation-complete') {
+                hideLoader();
+            }
+        };
+
+        // Execute button click handler
+        document.getElementById('execute').onclick = () => {
+            const position = document.querySelector('input[name="position"]:checked').value;
+            showLoader();
+            parent.postMessage({ pluginMessage: { type: 'run-plugin', position } }, '*');
+        };
+
+        // Function to show the loader
+        function showLoader() {
+            document.querySelector('.loader-container').style.display = 'flex';
+        }
+
+        // Function to hide the loader
+        function hideLoader() {
+            document.querySelector('.loader-container').style.display = 'none';
+        }
+
+        // WeekDay Up button click handler
+        document.getElementById('weekday-up').onclick = () => {
+            parent.postMessage({ pluginMessage: { type: 'weekday-up' } }, '*');
+        };
+
+        // WeekDay Down button click handler
+        document.getElementById('weekday-down').onclick = () => {
+            parent.postMessage({ pluginMessage: { type: 'weekday-down' } }, '*');
+        };
+
+        // Request the initial frame number when the UI is loaded
+        parent.postMessage({ pluginMessage: { type: 'get-frame-number' } }, '*');
+
+        // Handle Tab Switching
+        const tabs = document.querySelectorAll('.tab');
+        const tabContents = document.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = tab.getAttribute('data-tab');
+
+                // Remove active class from all tabs
+                tabs.forEach(t => t.classList.remove('active'));
+
+                // Hide all tab contents
+                tabContents.forEach(tc => tc.classList.remove('active'));
+
+                // Add active class to the clicked tab
+                tab.classList.add('active');
+
+                // Show the corresponding tab content
+                document.getElementById(target).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

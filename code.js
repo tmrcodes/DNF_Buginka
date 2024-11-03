@@ -249,31 +249,49 @@ const FrameUtils = {
           currentDate.setUTCDate(currentDate.getUTCDate() - 1);
         }
 
-        const updatePromises = [];
-
-        const newDateText = DateUtils.formatDateInRussian(currentDate);
-        const dayTitleUpdatePromise = new Promise(function(res, rej) {
+        (async function() {
+          const newDateText = DateUtils.formatDateInRussian(currentDate);
           dayTitleLayer.characters = newDateText;
-          res();
-        });
-        updatePromises.push(dayTitleUpdatePromise);
 
-        const newWeekDayName = DateUtils.getDayOfWeekInRussian(currentDate);
-        const weekDayNameUpdatePromise = new Promise(function(res, rej) {
+          const newWeekDayName = DateUtils.getDayOfWeekInRussian(currentDate);
           weekDayNameLayer.characters = newWeekDayName;
-          res();
-        });
-        updatePromises.push(weekDayNameUpdatePromise);
 
-        Promise.all(updatePromises).then(function() {
-          FrameUtils.updateActiveDayOpacity(frame).then(function() {
-            resolve();
-          }).catch(function(error) {
-            console.error(`Error updating active day opacity: ${error.message}`);
-            resolve();
-          });
-        }).catch(function(error) {
-          console.error(`Error updating DayTitle and WeekDayName: ${error.message}`);
+          // Now check if week number has changed
+          const newWeekNumber = DateUtils.getISOWeekNumber(currentDate);
+          const newYear = currentDate.getUTCFullYear();
+          const currentWeekNumber = FrameUtils.getWeekNumberFromFrame(frame);
+
+          if (newWeekNumber !== currentWeekNumber) {
+            // Week has changed
+
+            // Update WeekNumber layer
+            await FrameUtils.setWeekNumberInFrame(frame, newWeekNumber);
+
+            // Update WeekDay[1-7] labels
+            const dates = DateUtils.getDatesForWeek(newWeekNumber, newYear);
+            const formattedDates = dates.map(function(date) {
+              return DateUtils.formatDateInRussian(date);
+            });
+
+            const weekDayTextLayers = NodeUtils.findWeekDayTextLayers(frame);
+            const weekDayPromises = weekDayTextLayers.map(async (weekDayLayer, index) => {
+              if (formattedDates[index]) {
+                try {
+                  await figma.loadFontAsync(weekDayLayer.fontName);
+                  weekDayLayer.characters = formattedDates[index];
+                } catch (error) {
+                  console.error(`Failed to load font for "${weekDayLayer.name}": ${error.message}`);
+                }
+              }
+            });
+
+            await Promise.all(weekDayPromises);
+          }
+
+          await FrameUtils.updateActiveDayOpacity(frame);
+          resolve();
+        })().catch(function(error) {
+          console.error(`Error in changeDay function: ${error.message}`);
           resolve();
         });
       }).catch(function(error) {
@@ -281,6 +299,50 @@ const FrameUtils = {
         resolve();
       });
     });
+  },
+
+  setWeekNumberInFrame: function(frame, newWeekNumber) {
+    const weekNumberLayer = NodeUtils.findTextLayer(frame, "WeekNumber");
+    if (weekNumberLayer) {
+      figma.loadFontAsync(weekNumberLayer.fontName).then(function() {
+        const currentText = weekNumberLayer.characters;
+        const match = currentText.match(/(\D*)(\d+)(?:\.(\d+))?/);
+
+        if (match) {
+          const prefix = match[1] || '';
+          const hasSuffix = match[3] !== undefined;
+          const suffixNumber = hasSuffix ? 1 : '';
+          const updatedText = hasSuffix
+            ? `${prefix}${newWeekNumber}.${suffixNumber}`
+            : `${prefix}${newWeekNumber}`;
+          weekNumberLayer.characters = updatedText;
+        } else {
+          weekNumberLayer.characters = `W${newWeekNumber}`;
+        }
+      }).catch(function(error) {
+        console.error(`Failed to load font for "WeekNumber" layer: ${error.message}`);
+      });
+    }
+  },
+
+  getWeekNumberFromFrame: function(frame) {
+    const weekNumberLayer = NodeUtils.findTextLayer(frame, "WeekNumber");
+    if (weekNumberLayer) {
+      const match = weekNumberLayer.characters.match(/(\d+)/);
+      if (match) {
+        return parseInt(match[1], 10);
+      }
+    }
+
+    const titleLayer = NodeUtils.findTextLayer(frame, "Title");
+    if (titleLayer) {
+      const match = titleLayer.characters.match(/W(\d+)/i);
+      if (match) {
+        return parseInt(match[1], 10);
+      }
+    }
+
+    return DateUtils.getISOWeekNumber(new Date());
   },
 
   updateTextLayers: function(frame, frameNumber, incrementPart) {
@@ -554,26 +616,6 @@ const FrameUtils = {
         resolve();
       }
     });
-  },
-
-  getWeekNumberFromFrame: function(frame) {
-    const weekNumberLayer = NodeUtils.findTextLayer(frame, "WeekNumber");
-    if (weekNumberLayer) {
-      const match = weekNumberLayer.characters.match(/(\d+)/);
-      if (match) {
-        return parseInt(match[1], 10);
-      }
-    }
-
-    const titleLayer = NodeUtils.findTextLayer(frame, "Title");
-    if (titleLayer) {
-      const match = titleLayer.characters.match(/W(\d+)/i);
-      if (match) {
-        return parseInt(match[1], 10);
-      }
-    }
-
-    return DateUtils.getISOWeekNumber(new Date());
   },
 };
 

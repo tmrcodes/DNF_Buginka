@@ -1,5 +1,37 @@
 figma.showUI(__html__, { width: 300, height: 400 });
 
+let pageHeaders = [];
+
+function fetchPageHeaders() {
+  console.log("Starting fetch for page headers...");
+
+  return fetch('https://raw.githubusercontent.com/tmrcodes/DNF_Buginka/main/page_headers.json')
+    .then(response => {
+      console.log("Fetch response received. Status:", response.status);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch page headers: ${response.status}`);
+      }
+      
+      return response.json();
+    })
+    .then(data => {
+      pageHeaders = data.pageHeaders;
+      console.log("Page headers successfully fetched:", pageHeaders);
+    })
+    .catch(error => {
+      console.error(`Error fetching page headers: ${error.message}`);
+      
+      // Set default headers if fetch fails
+      pageHeaders = ['Page Header', 'Bet Taqyryby', 'Bet Taqyryby LR', 'Bet Taqyryby JAG'];
+      console.log("Using default page headers:", pageHeaders);
+    });
+}
+
+function isPageHeaderInstance(node) {
+  return node.type === 'INSTANCE' && pageHeaders.includes(node.name);
+}
+
 const DateUtils = {
   getISOWeekNumber: function(date) {
     const tmpDate = new Date(date.getTime());
@@ -144,8 +176,7 @@ function isNodeInsideInstance(node) {
 }
 
 function isPageHeaderInstance(node) {
-  return node.type === 'INSTANCE' && 
-         ['Page Header', 'Bet Taqyryby', 'Bet Taqyryby LR', 'Bet Taqyryby JAG'].includes(node.name);
+  return node.type === 'INSTANCE' && pageHeaders.includes(node.name);
 }
 
 const FontUtils = {
@@ -588,7 +619,9 @@ const SelectionHandler = {
   },
 };
 
-function initializePlugin() {
+async function initializePlugin() {
+  await fetchPageHeaders();
+
   figma.ui.onmessage = function(msg) {
     switch (msg.type) {
       case 'run-plugin':
@@ -611,6 +644,8 @@ function initializePlugin() {
   SelectionHandler.updateFrameNumberInUI();
   figma.on('selectionchange', SelectionHandler.updateFrameNumberInUI);
 }
+
+initializePlugin();
 
 const RunPluginHandler = {
   handle: function(msg) {

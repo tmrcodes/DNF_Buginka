@@ -2,7 +2,6 @@
 <html>
 <head>
     <style>
-        /* Include the font using @font-face */
         @font-face {
             font-family: 'Roboto Mono';
             src: url('fonts/RobotoMono-Regular.ttf') format('truetype');
@@ -19,17 +18,15 @@
             display: flex;
             flex-direction: column;
         }
-        /* Container for the entire UI */
         .container {
             display: flex;
             flex-direction: column;
             width: 100%;
             height: 100%;
         }
-        /* Horizontal Tabs */
         .tabs {
             display: flex;
-            background-color: #3F51B5; /* Indigo Blue */
+            background-color: #3F51B5;
         }
         .tab {
             padding: 15px 20px;
@@ -41,12 +38,11 @@
             text-align: center;
         }
         .tab:hover {
-            background-color: #303F9F; /* Darker Indigo Blue */
+            background-color: #303F9F;
         }
         .tab.active {
-            background-color: #283593; /* Even Darker Indigo Blue */
+            background-color: #283593;
         }
-        /* Content area for the tabs */
         .content {
             flex: 1;
             padding: 20px;
@@ -60,13 +56,12 @@
         .tab-content.active {
             display: block;
         }
-        /* Existing styles adjusted for the new layout */
         .app-title {
             font-size: 18px;
             font-weight: bold;
             text-align: left;
             margin-bottom: 15px;
-            color: #3F51B5; /* Indigo Blue */
+            color: #3F51B5;
         }
         .option {
             margin-bottom: 15px;
@@ -94,7 +89,7 @@
             padding: 10px 15px;
             font-size: 14px;
             color: #FFF;
-            background-color: #3F51B5; /* Indigo Blue */
+            background-color: #3F51B5;
             border: none;
             border-radius: 4px;
             cursor: pointer;
@@ -102,7 +97,7 @@
             font-family: 'Roboto Mono', monospace;
         }
         button:hover {
-            background-color: #303F9F; /* Darker Indigo Blue */
+            background-color: #303F9F;
         }
         .button-group {
             display: flex;
@@ -114,7 +109,7 @@
             padding: 10px 15px;
             font-size: 14px;
             color: #FFF;
-            background-color: #3F51B5; /* Indigo Blue */
+            background-color: #3F51B5;
             border: none;
             cursor: pointer;
             transition: background-color 0.3s ease;
@@ -122,7 +117,7 @@
             border-radius: 0;
         }
         .half-button:hover {
-            background-color: #303F9F; /* Darker Indigo Blue */
+            background-color: #303F9F;
         }
         .half-button:first-child {
             border-top-left-radius: 4px;
@@ -132,7 +127,6 @@
             border-top-right-radius: 4px;
             border-bottom-right-radius: 4px;
         }
-        /* Responsive Design */
         @media (max-width: 600px) {
             .tab {
                 padding: 10px 15px;
@@ -142,7 +136,6 @@
                 font-size: 16px;
             }
         }
-        /* Animation */
         button:active {
             transform: scale(0.98);
         }
@@ -151,12 +144,11 @@
             transition: color 0.2s ease;
         }
         input[type="radio"]:checked + label {
-            color: #3F51B5; /* Indigo Blue */
+            color: #3F51B5;
         }
         input[type="radio"]:not(:checked) + label:hover {
-            color: #303F9F; /* Darker Indigo Blue */
+            color: #303F9F;
         }
-        /* Loader styles */
         .loader-container {
             position: fixed;
             top: 0;
@@ -170,7 +162,6 @@
             z-index: 1000;
             display: none;
         }
-
         .loader {
             border: 5px solid #f3f3f3;
             border-top: 5px solid #3F51B5;
@@ -179,31 +170,82 @@
             height: 50px;
             animation: spin 1s linear infinite;
         }
-
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+
+        /* New validation styles */
+        .validation-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .validation-title {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        .validation-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 8px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+        }
+        .validation-label {
+            flex: 1;
+            font-size: 14px;
+            color: #666;
+        }
+        .validation-status {
+            width: 24px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .status-unknown {
+            color: #999;
+        }
+        .status-success {
+            color: #4CAF50;
+        }
+        .status-error {
+            color: #F44336;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Horizontal Tabs -->
         <div class="tabs">
             <div class="tab active" data-tab="plugin">Plugin</div>
             <div class="tab" data-tab="settings">Importer</div>
             <div class="tab" data-tab="about">About</div>
-            <!-- Add more tabs here as needed -->
         </div>
-        <!-- Content Area for Tabs -->
         <div class="content">
-            <!-- Plugin Tab Content -->
             <div class="tab-content active" id="plugin">
                 <div class="app-title">Buginka 1.0</div>
                 <div class="option">
                     <label for="frame-number">FRAME:</label>
                     <span id="frame-number">#</span>
                 </div>
+
+                <!-- New validation section -->
+                <div class="validation-container">
+                    <div class="validation-title">Layer Name Validation</div>
+                    <div class="validation-row">
+                        <span class="validation-label">DayTitle</span>
+                        <span class="validation-status status-unknown" id="dayTitle-status">❔</span>
+                    </div>
+                    <div class="validation-row">
+                        <span class="validation-label">WeekDayName</span>
+                        <span class="validation-status status-unknown" id="weekDayName-status">❔</span>
+                    </div>
+                </div>
+<br>
                 <div class="option">
                     <label>Position:</label>
                     <div>
@@ -225,85 +267,75 @@
                     <button id="weekday-down" class="half-button">WeekDay Down</button>
                 </div>
             </div>
-            <!-- Settings Tab Content -->
             <div class="tab-content" id="settings">
                 <h2>Importer</h2>
                 <p>Settings content goes here.</p>
             </div>
-            <!-- About Tab Content -->
             <div class="tab-content" id="about">
                 <h2>About</h2>
                 <p>DNF_Buginka the best.</p>
             </div>
-            <!-- Add more tab contents here as needed -->
         </div>
     </div>
 
-    <!-- Add this loader container just before the closing body tag -->
     <div class="loader-container">
         <div class="loader"></div>
     </div>
 
     <script>
-        // Handle incoming messages from the plugin
         onmessage = (event) => {
-            const { type, frameNumber } = event.data.pluginMessage;
+            const { type, frameNumber, validation } = event.data.pluginMessage;
 
             if (type === 'set-frame-number') {
                 document.getElementById('frame-number').textContent = frameNumber;
             } else if (type === 'operation-complete') {
                 hideLoader();
+            } else if (type === 'layer-validation') {
+                updateValidationStatus('dayTitle-status', validation.hasDayTitle);
+                updateValidationStatus('weekDayName-status', validation.hasWeekDayName);
             }
         };
 
-        // Execute button click handler
+        function updateValidationStatus(elementId, isValid) {
+            const element = document.getElementById(elementId);
+            element.className = 'validation-status ' + 
+                (isValid ? 'status-success' : 'status-error');
+            element.textContent = isValid ? '✅' : '❌';
+        }
+
         document.getElementById('execute').onclick = () => {
             const position = document.querySelector('input[name="position"]:checked').value;
             showLoader();
             parent.postMessage({ pluginMessage: { type: 'run-plugin', position } }, '*');
         };
 
-        // Function to show the loader
         function showLoader() {
             document.querySelector('.loader-container').style.display = 'flex';
         }
 
-        // Function to hide the loader
         function hideLoader() {
             document.querySelector('.loader-container').style.display = 'none';
         }
 
-        // WeekDay Up button click handler
         document.getElementById('weekday-up').onclick = () => {
             parent.postMessage({ pluginMessage: { type: 'weekday-up' } }, '*');
         };
 
-        // WeekDay Down button click handler
         document.getElementById('weekday-down').onclick = () => {
             parent.postMessage({ pluginMessage: { type: 'weekday-down' } }, '*');
         };
 
-        // Request the initial frame number when the UI is loaded
         parent.postMessage({ pluginMessage: { type: 'get-frame-number' } }, '*');
 
-        // Handle Tab Switching
         const tabs = document.querySelectorAll('.tab');
         const tabContents = document.querySelectorAll('.tab-content');
 
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const target = tab.getAttribute('data-tab');
-
-                // Remove active class from all tabs
                 tabs.forEach(t => t.classList.remove('active'));
-
-                // Hide all tab contents
                 tabContents.forEach(tc => tc.classList.remove('active'));
-
-                // Add active class to the clicked tab
                 tab.classList.add('active');
-
-                // Show the corresponding tab content
                 document.getElementById(target).classList.add('active');
             });
         });

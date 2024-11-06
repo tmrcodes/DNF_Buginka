@@ -623,10 +623,40 @@ const SelectionHandler = {
   updateFrameNumberInUI: function() {
     const selection = figma.currentPage.selection;
     let frameNumber = '';
+    let validation = {
+      hasDayTitle: false,
+      hasWeekDayName: false
+    };
+
     if (selection.length > 0 && selection[0].type === 'FRAME') {
       frameNumber = selection[0].name;
+      
+      // Check for required layers
+      const frame = selection[0];
+      const pageHeaderInstance = frame.findOne(isPageHeaderInstance);
+      
+      if (pageHeaderInstance) {
+        const dayTitleLayer = pageHeaderInstance.findOne(node => 
+          node.type === 'TEXT' && node.name === 'DayTitle');
+        const weekDayNameLayer = pageHeaderInstance.findOne(node => 
+          node.type === 'TEXT' && node.name === 'WeekDayName');
+        
+        validation.hasDayTitle = !!dayTitleLayer;
+        validation.hasWeekDayName = !!weekDayNameLayer;
+      }
     }
-    figma.ui.postMessage({ type: 'set-frame-number', frameNumber: frameNumber });
+
+    // Send both frame number and validation status
+    figma.ui.postMessage({ 
+      type: 'set-frame-number', 
+      frameNumber: frameNumber 
+    });
+    
+    // Send validation status separately
+    figma.ui.postMessage({ 
+      type: 'layer-validation',
+      validation: validation
+    });
   },
 };
 

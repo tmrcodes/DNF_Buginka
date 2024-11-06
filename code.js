@@ -145,7 +145,7 @@ function isNodeInsideInstance(node) {
 
 function isPageHeaderInstance(node) {
   return node.type === 'INSTANCE' && 
-         ['Page Header', 'Bet Taqyryby', 'Bet Taqyryby LR', 'Bet Taqyryby JAG', 'Bet Taqyryby Mycar'].includes(node.name);
+         ['Page Header', 'Bet Taqyryby', 'Bet Taqyryby LR', 'Bet Taqyryby JAG', 'Bet Taqyryby Mycar', 'Bet Taqyryby Tank'].includes(node.name);
 }
 
 const FontUtils = {
